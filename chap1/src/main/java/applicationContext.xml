@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- /src/main/java/applicationContext.xml -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd">
+             
+<!-- beans안에 bean(객체) 생성 -->
+<bean id="greeter" class="chap1.Greeter">
+	<!-- Greeter.java에 setFormat 메서드는 반드시 존재해야함.
+		 Greeter.java에 setFormat 메서드 실행
+		 property -> format이름으로 '%s을 시작합니다.'값을 지정.전달 -->
+	<property name="format" value="%s을 시작합니다."/>
+</bean>
+<!-- message 객체를 생성 MessageKo객체 전달 -->
+<bean id="message" class="chap1.MessageEn"/>
+
+
+</beans>
