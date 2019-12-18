@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- src/main/java/aop.xml.xml -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/aop
+http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+<bean id="write" class="spring.WriteImpl">
+	<constructor-arg><ref bean="articleDao"/></constructor-arg>
+</bean>
+
+<bean id="articleDao" class="spring.MariadbArticleDao"/>
+<!-- AOP 설정 -->
+<!-- AspecJ 클래스를  객체화 -->
+<bean id="logging" class="spring.LoggingAspect"/>
+	<!-- 
+		aop 관련 용어
+			pointcut : aop 대상이 되는 메서드 설정. 핵심로직 지정.
+			 execution(public * spring.*Impl.*(..));
+			 public : 메서드의 접근제어자 지정
+			    *	: 리턴타입 상관없음
+			 spring.*Impl : spring 패키지 내부의 클래스 중 이름이 impl로 끝나는 클래스
+			 *(..) : 메서드이름 상관없음, 매개변수 상관없음.
+			 aspect : AOP로 사용될 객체 설정
+			 	ref =  "logging" => 객체의 이름 == spring.loggingAspect임.
+			 advice : AOP가 실행 될 시점 지정.
+			 	around : 이전 과 이후
+			 	before : 핵심기능 이전에 실행
+			 	after :  핵심기능 이후에 실행.
+			 	afterReturning : 정상 종료 이후
+			 	afterthrowing : 예외 종류 이후
+	 -->
+	
+	
+	
+	<aop:config><!-- aop설정 -->
+		 <!-- 핵심로직을 찾아내고 알려줌. -->
+		 <!-- pointcut : 핵심로직 지정. -->
+		 <!--  expression : 핵심로직이 실행될 때 -->
+		 <!-- 메서드 접근자 : public 
+		 	   리턴값 상관없음 : *
+		 	  spring 패키지에 속한 클래스 중 impl로 끝나는 클래스  : spring.*Impl
+		 	  public  모든 메서드  : *(..)
+		 	  
+		 	  spring 패키지에 속한 클래스 중 이름이 *impl로 끝나는 클래스의 public 메서드. 리턴타입 상과없음, 매개변수 상관없음
+		 -->
+		 
+		<aop:pointcut
+			expression="execution(public * spring.*Impl.*(..))"
+			id="servicepointcut"/>
+			 <!-- aspect 클래스 지정(logging클래스) logging클래스안에 logging 메서드 사용-->
+			  <!-- aop:around -> 시작 전후 loggin메서드 실행해-->
+			  <!-- pointcut의 id와 around의 pointcut-ref 이름이 같아야함. -->
+			  <!-- AOP로 사용될 객체와 pointcut 지정. -->
+			<aop:aspect id="loggingAspect" ref="logging">
+				<!-- advice 지정. 
+					 aop:around : 핵심로직의 시작과 끝 
+					 pointcut-ref servicepointcut실행되기전에 logging먼저 실행되도록   
+				-->
+				<aop:around method="logging"
+						pointcut-ref="servicepointcut"/>
+		</aop:aspect>		
+	</aop:config>
+</beans>
